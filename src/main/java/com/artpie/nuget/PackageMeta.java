@@ -29,7 +29,7 @@ package com.artpie.nuget;
  *
  * @since 0.1
  */
-public class PackageMeta {
+public final class PackageMeta {
 
     /**
      * Package identity.

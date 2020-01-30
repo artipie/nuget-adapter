@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  *
  * @since 0.1
  */
-public class PackageBinaryStream {
+public final class PackageBinaryStream {
 
     /**
      * Binary stream containing package data.
