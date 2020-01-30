@@ -50,6 +50,11 @@ SOFTWARE.
       <version>0.9.1</version>
     </dependency>
     <dependency>
+      <groupId>com.jcabi</groupId>
+      <artifactId>jcabi-xml</artifactId>
+      <version>0.22.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>${junit-platform.version}</version>
@@ -69,6 +74,12 @@ SOFTWARE.
     </dependency>
   </dependencies>
   <build>
+    <testResources>
+      <testResource>
+        <directory>${basedir}/src/test/resources-binary</directory>
+        <filtering>false</filtering>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
@@ -165,7 +176,7 @@ SOFTWARE.
                 <exclude>findbugs:.*</exclude>
                 <exclude>duplicatefinder:.*</exclude>
                 <exclude>xml:/src/it/settings.xml</exclude>
-                <exclude>checkstyle:/src/test/resources/.*</exclude>
+                <exclude>checkstyle:/src/test/resources-binary/.*</exclude>
               </excludes>
             </configuration>
           </plugin>
