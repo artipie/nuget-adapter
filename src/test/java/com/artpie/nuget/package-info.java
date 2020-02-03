@@ -22,64 +22,10 @@
  * SOFTWARE.
  */
 
-package com.artpie.nuget;
-
-import com.artipie.asto.Key;
-import java.util.Locale;
-
 /**
- * Package version identity.
+ * NuGet repository tests.
  *
  * @since 0.1
  */
-public final class PackageIdentity {
 
-    /**
-     * Package identity.
-     */
-    private final String id;
-
-    /**
-     * Package version.
-     */
-    private final String version;
-
-    /**
-     * Ctor.
-     *
-     * @param id Package identity.
-     * @param version Package version.
-     */
-    public PackageIdentity(final String id, final String version) {
-        this.id = id;
-        this.version = version;
-    }
-
-    /**
-     * Get key for .nuspec file.
-     *
-     * @return Key to .nuspec file.
-     */
-    public Key nuspecKey() {
-        final String name = String.format("%s.nuspec", this.idLowerCase());
-        return new Key.From(this.root(), name);
-    }
-
-    /**
-     * Get root key for package.
-     *
-     * @return Root key.
-     */
-    private Key root() {
-        return new Key.From(this.idLowerCase(), this.version);
-    }
-
-    /**
-     * Transforms id part to lowercase.
-     *
-     * @return Id in lower case.
-     */
-    private String idLowerCase() {
-        return this.id.toLowerCase(Locale.getDefault());
-    }
-}
+package com.artpie.nuget;

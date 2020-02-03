@@ -24,62 +24,49 @@
 
 package com.artpie.nuget;
 
-import com.artipie.asto.Key;
-import java.util.Locale;
+import com.google.common.io.ByteStreams;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Package version identity.
+ * Newton.Json package resources.
  *
  * @since 0.1
  */
-public final class PackageIdentity {
-
-    /**
-     * Package identity.
-     */
-    private final String id;
-
-    /**
-     * Package version.
-     */
-    private final String version;
+final class NewtonJsonPackage {
 
     /**
      * Ctor.
-     *
-     * @param id Package identity.
-     * @param version Package version.
      */
-    public PackageIdentity(final String id, final String version) {
-        this.id = id;
-        this.version = version;
+    private NewtonJsonPackage() {
     }
 
     /**
-     * Get key for .nuspec file.
+     * Read .nuspec file content.
      *
-     * @return Key to .nuspec file.
+     * @return Binary data.
      */
-    public Key nuspecKey() {
-        final String name = String.format("%s.nuspec", this.idLowerCase());
-        return new Key.From(this.root(), name);
+    static byte[] readNuspec() {
+        return read("newtonsoft.json.nuspec");
     }
 
     /**
-     * Get root key for package.
+     * Reads file content.
      *
-     * @return Root key.
+     * @param name File name.
+     * @return Binary data.
      */
-    private Key root() {
-        return new Key.From(this.idLowerCase(), this.version);
-    }
-
-    /**
-     * Transforms id part to lowercase.
-     *
-     * @return Id in lower case.
-     */
-    private String idLowerCase() {
-        return this.id.toLowerCase(Locale.getDefault());
+    private static byte[] read(final String name) {
+        final String resource = String.format("newtonsoft.json/12.0.3/%s", name);
+        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        try (InputStream stream = loader.getResourceAsStream(resource)) {
+            if (stream == null) {
+                final String message = String.format("Cannot find resource by name '%s'", name);
+                throw new IllegalArgumentException(message);
+            }
+            return ByteStreams.toByteArray(stream);
+        } catch (final IOException ex) {
+            throw new IllegalArgumentException(String.format("Failed to read '%s'", name), ex);
+        }
     }
 }
