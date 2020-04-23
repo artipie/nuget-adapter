@@ -23,6 +23,7 @@
  */
 package com.artpie.nuget.http.metadata;
 
+import com.artipie.http.Headers;
 import com.artipie.http.Response;
 import com.artipie.http.rs.RsStatus;
 import com.artipie.http.rs.RsWithBody;
@@ -30,7 +31,6 @@ import com.artipie.http.rs.RsWithStatus;
 import com.artpie.nuget.PackageId;
 import com.artpie.nuget.Repository;
 import com.artpie.nuget.Version;
-import com.artpie.nuget.http.Headers;
 import com.artpie.nuget.http.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

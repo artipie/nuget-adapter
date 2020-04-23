@@ -25,10 +25,10 @@ package com.artpie.nuget.http.publish;
 
 import com.artipie.asto.Concatenation;
 import com.artipie.asto.Remaining;
+import com.artipie.http.Headers;
 import io.reactivex.Flowable;
 import java.nio.ByteBuffer;
 import java.util.Collections;
-import org.cactoos.map.MapEntry;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Assertions;
@@ -44,12 +44,7 @@ class MultipartTest {
     @Test
     void shouldReadFirstPart() {
         final Multipart multipart = new Multipart(
-            Collections.singleton(
-                new MapEntry<>(
-                    "Content-Type",
-                    "multipart/form-data; boundary=\"simple boundary\""
-                )
-            ),
+            new Headers.From("Content-Type", "multipart/form-data; boundary=\"simple boundary\""),
             Flowable.just(
                 ByteBuffer.wrap(
                     String.join(
@@ -85,9 +80,7 @@ class MultipartTest {
     @Test
     void shouldFailIfNoParts() {
         final Multipart multipart = new Multipart(
-            Collections.singleton(
-                new MapEntry<>("content-type", "multipart/form-data; boundary=123")
-            ),
+            new Headers.From("content-type", "multipart/form-data; boundary=123"),
             Flowable.just(ByteBuffer.wrap("--123--".getBytes()))
         );
         final Throwable throwable = Assertions.assertThrows(

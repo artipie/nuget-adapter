@@ -23,6 +23,7 @@
  */
 package com.artpie.nuget.http;
 
+import com.artipie.http.Headers;
 import com.artipie.http.Response;
 import java.nio.ByteBuffer;
 import org.reactivestreams.Publisher;

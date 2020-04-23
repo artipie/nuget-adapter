@@ -27,7 +27,9 @@ package com.artpie.nuget.http;
 import com.artipie.asto.Key;
 import com.artipie.asto.Storage;
 import com.artipie.asto.blocking.BlockingStorage;
+import com.artipie.http.Headers;
 import com.artipie.http.Response;
+import com.artipie.http.async.AsyncResponse;
 import com.artipie.http.rs.RsStatus;
 import com.artipie.http.rs.RsWithStatus;
 import com.artpie.nuget.InvalidPackageException;
@@ -104,28 +106,31 @@ public final class PackagePublish implements Route {
             final Headers headers,
             final Publisher<ByteBuffer> body
         ) {
-            return connection -> CompletableFuture
-                .supplyAsync(() -> new Key.From(UUID.randomUUID().toString()))
-                .thenCompose(
-                    key -> this.storage.save(key, new Multipart(headers, body).first()).thenCompose(
-                        ignored -> {
-                            RsStatus status;
-                            try {
-                                new Repository(
-                                    new BlockingStorage(this.storage)
-                                ).add(key);
-                                status = RsStatus.CREATED;
-                            } catch (final IOException ex) {
-                                throw new IllegalStateException(ex);
-                            } catch (final InvalidPackageException ex) {
-                                status = RsStatus.BAD_REQUEST;
-                            } catch (final PackageVersionAlreadyExistsException ex) {
-                                status = RsStatus.CONFLICT;
-                            }
-                            return new RsWithStatus(status).send(connection);
-                        }
+            return new AsyncResponse(
+                CompletableFuture
+                    .supplyAsync(() -> new Key.From(UUID.randomUUID().toString()))
+                    .thenCompose(
+                        key -> this.storage.save(key, new Multipart(headers, body).first())
+                            .thenApply(
+                                ignored -> {
+                                    RsStatus status;
+                                    try {
+                                        new Repository(
+                                            new BlockingStorage(this.storage)
+                                        ).add(key);
+                                        status = RsStatus.CREATED;
+                                    } catch (final IOException ex) {
+                                        throw new IllegalStateException(ex);
+                                    } catch (final InvalidPackageException ex) {
+                                        status = RsStatus.BAD_REQUEST;
+                                    } catch (final PackageVersionAlreadyExistsException ex) {
+                                        status = RsStatus.CONFLICT;
+                                    }
+                                    return new RsWithStatus(status);
+                                }
+                            )
                     )
-                );
+            );
         }
     }
 }

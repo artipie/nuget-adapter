@@ -27,6 +27,7 @@ import com.artipie.asto.Key;
 import com.artipie.asto.Storage;
 import com.artipie.asto.blocking.BlockingStorage;
 import com.artipie.asto.memory.InMemoryStorage;
+import com.artipie.http.Headers;
 import com.artipie.http.Response;
 import com.artipie.http.hm.RsHasBody;
 import com.artipie.http.hm.RsHasStatus;
@@ -41,7 +42,6 @@ import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.cactoos.map.MapEntry;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.hamcrest.core.AllOf;
@@ -227,8 +227,8 @@ class NuGetTest {
         entity.writeTo(sink);
         return this.nuget.response(
             "PUT /base/package",
-            Collections.singleton(
-                new MapEntry<>("Content-Type", entity.getContentType().getValue())
+            new Headers.From(
+                "Content-Type", entity.getContentType().getValue()
             ),
             Flowable.fromArray(ByteBuffer.wrap(sink.toByteArray()))
         );

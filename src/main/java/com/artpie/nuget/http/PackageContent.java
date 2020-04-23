@@ -25,15 +25,17 @@ package com.artpie.nuget.http;
 
 import com.artipie.asto.Key;
 import com.artipie.asto.Storage;
+import com.artipie.http.Headers;
 import com.artipie.http.Response;
+import com.artipie.http.async.AsyncResponse;
 import com.artipie.http.rs.RsStatus;
+import com.artipie.http.rs.RsWithBody;
 import com.artipie.http.rs.RsWithStatus;
 import com.artpie.nuget.PackageIdentity;
 import com.artpie.nuget.http.metadata.ContentLocation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -126,20 +128,19 @@ public final class PackageContent implements Route, ContentLocation {
 
         @Override
         public Response get() {
-            return connection -> this.existing()
-                .thenCompose(
-                    existing -> existing.<CompletionStage<Void>>map(
-                        key -> this.storage.value(key).thenCompose(
-                            data -> connection.accept(
-                                RsStatus.OK,
-                                Collections.emptyList(),
-                                data
-                            )
+            return new AsyncResponse(
+                this.existing().thenCompose(
+                    existing -> existing.<CompletionStage<Response>>map(
+                        key -> this.storage.value(key).thenApply(
+                            data -> new RsWithBody(new RsWithStatus(RsStatus.OK), data)
                         )
                     ).orElseGet(
-                        () -> new RsWithStatus(RsStatus.NOT_FOUND).send(connection)
+                        () -> CompletableFuture.completedFuture(
+                            new RsWithStatus(RsStatus.NOT_FOUND)
+                        )
                     )
-                );
+                )
+            );
         }
 
         @Override
