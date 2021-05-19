@@ -13,6 +13,6 @@ updates:
     assignees:
       - "g4s8"
     reviewers:
-      - "artipie/maintainers"
+      - "g4s8"
     schedule:
       interval: "daily"
