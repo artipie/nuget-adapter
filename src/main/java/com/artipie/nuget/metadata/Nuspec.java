@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -49,6 +50,13 @@ public interface Nuspec {
      * @throws ArtipieException If authors field is not found
      */
     String authors();
+
+    /**
+     * Returns optional field by name.
+     * @param name Field name
+     * @return Optional with value is found
+     */
+    Optional<String> fieldByName(OptFieldName name);
 
     /**
      * Nuspec file bytes.
@@ -126,6 +134,20 @@ public interface Nuspec {
                 this.content,
                 "/*[name()='package']/*[name()='metadata']/*[name()='authors']/text()"
             );
+        }
+
+        @Override
+        public Optional<String> fieldByName(final OptFieldName name) {
+            final List<String> values = this.content.xpath(
+                String.format(
+                    "/*[name()='package']/*[name()='metadata']/*[name()='%s']/text()", name.get()
+                )
+            );
+            Optional<String> res = Optional.empty();
+            if (!values.isEmpty()) {
+                res = Optional.of(values.get(0));
+            }
+            return res;
         }
 
         @Override
